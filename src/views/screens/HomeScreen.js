@@ -99,7 +99,7 @@ const HomeScreen = ({ navigation }) => {
         <View style={style.card}>
           <Image
             source={{ uri: item.image }}
-            style={{ height: 120, width: '100%', borderRadius: 10 }}
+            style={{ height: 140, width: '100%', borderRadius: 10 }}
           />
 
           <Text style={style.cardName}>{item.title}</Text>
@@ -127,11 +127,11 @@ const HomeScreen = ({ navigation }) => {
         <Image
           source={{ uri: item.image }}
           style={{
-            width: 100,
-            height: '100%',
-            borderTopLeftRadius: 10,
-            borderBottomLeftRadius: 10,
-            marginRight: 10,
+            width: 120,
+            height: '140%',
+            borderTopLeftRadius: 15,
+            borderBottomLeftRadius: 15,
+            marginRight: 15,
           }}
         />
         <View style={{ paddingVertical: 15, justifyContent: 'center' }}>
@@ -260,10 +260,10 @@ const style = StyleSheet.create({
     marginLeft: 5,
   },
   card: {
-    height: 190,
+    height: 250,
     backgroundColor: COLORS.white,
-    elevation: 10,
-    width: width / 2.5,
+    elevation: 15,
+    width: width / 2,
     marginRight: 20,
     padding: 10,
     marginVertical: 20,
@@ -295,7 +295,7 @@ const style = StyleSheet.create({
     alignItems: 'center',
   },
   popularItemCard: {
-    height: 90,
+    height: 100,
     width: width - 100,
     backgroundColor: COLORS.white,
     elevation: 10,

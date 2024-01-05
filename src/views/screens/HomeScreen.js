@@ -1,220 +1,308 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Dimensions,
-  Image,
   SafeAreaView,
-  StyleSheet,
-  Text,
   View,
-} from 'react-native';
-import {
-  FlatList,
-  ScrollView,
+  Text,
   TextInput,
-  TouchableHighlight,
+  FlatList,
+  Dimensions,
+  StyleSheet,
+  Image,
+  Pressable,
+  ScrollView,
   TouchableOpacity,
-} from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+} from 'react-native';
 import COLORS from '../../consts/colors';
-import categories from '../../consts/categories';
-import foods from '../../consts/foods';
-const {width} = Dimensions.get('screen');
-const cardWidth = width / 2 - 20;
+import axios from 'axios';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import furnitures from '../../consts/furnitures';
+const { width } = Dimensions.get('screen');
 
-const HomeScreen = ({navigation}) => {
-  const [selectedCategoryIndex, setSelectedCategoryIndex] = React.useState(0);
+const HomeScreen = ({ navigation }) => {
+  const categoryItems = [
+    { name: 'Chair', iconName: 'seat-outline' },
+    { name: 'Table', iconName: 'table-furniture' },
+    { name: 'Cupboard', iconName: 'cupboard-outline' },
+    { name: 'bed', iconName: 'bed-queen-outline' },
+  ];
 
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    callAPI();
+  }, []);
+
+  const callAPI = () => {
+    axios
+      .get('https://fakestoreapi.com/products')
+      .then(function (response) {
+        setProducts(response.data);
+      })
+      .catch(function (error) {
+        alert(error.message);
+      })
+      .finally(function () {
+        console.log('Finally called');
+      });
+  };
   const ListCategories = () => {
+    const [selectedCategoryIndex, setSelectedCategoryIndex] = React.useState(0);
     return (
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={style.categoriesListContainer}>
-        {categories.map((category, index) => (
+      <View style={style.categoriesContainer}>
+        {categoryItems.map((item, index) => (
           <TouchableOpacity
             key={index}
             activeOpacity={0.8}
             onPress={() => setSelectedCategoryIndex(index)}>
             <View
-              style={{
-                backgroundColor:
-                  selectedCategoryIndex == index
-                    ? COLORS.primary
-                    : COLORS.secondary,
-                ...style.categoryBtn,
-              }}>
-              <View style={style.categoryBtnImgCon}>
-                <Image
-                  source={category.image}
-                  style={{height: 35, width: 35, resizeMode: 'cover'}}
-                />
-              </View>
-              <Text
-                style={{
-                  fontSize: 15,
-                  fontWeight: 'bold',
-                  marginLeft: 10,
-                  color:
+              style={[
+                style.categoryItemBtn,
+                {
+                  backgroundColor:
                     selectedCategoryIndex == index
-                      ? COLORS.white
-                      : COLORS.primary,
-                }}>
-                {category.name}
+                      ? COLORS.primary
+                      : COLORS.light,
+                },
+              ]}>
+              <Icon
+                name={item.iconName}
+                size={20}
+                color={
+                  selectedCategoryIndex == index ? COLORS.white : COLORS.primary
+                }
+              />
+              <Text
+                style={[
+                  style.categoryText,
+                  {
+                    color:
+                      selectedCategoryIndex == index
+                        ? COLORS.white
+                        : COLORS.primary,
+                  },
+                ]}>
+                {item.name}
               </Text>
             </View>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </View>
     );
   };
-  const Card = ({food}) => {
+  const navigateToProductDetail = (item) => {
+    navigation.navigate('DetailsScreen', { item });
+  };
+  const Card = ({ item }) => {
     return (
-      <TouchableHighlight
-        underlayColor={COLORS.white}
-        activeOpacity={0.9}
-        onPress={() => navigation.navigate('DetailsScreen', food)}>
+      <Pressable
+        onPress={() => navigateToProductDetail(item)}>
         <View style={style.card}>
-          <View style={{alignItems: 'center', top: -40}}>
-            <Image source={food.image} style={{height: 120, width: 120}} />
-          </View>
-          <View style={{marginHorizontal: 20}}>
-            <Text style={{fontSize: 18, fontWeight: 'bold'}}>{food.name}</Text>
-            <Text style={{fontSize: 14, color: COLORS.grey, marginTop: 2}}>
-              {food.ingredients}
-            </Text>
-          </View>
+          <Image
+            source={{ uri: item.image }}
+            style={{ height: 120, width: '100%', borderRadius: 10 }}
+          />
+
+          <Text style={style.cardName}>{item.title}</Text>
           <View
             style={{
-              marginTop: 10,
-              marginHorizontal: 20,
+              marginTop: 5,
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Text style={{fontSize: 18, fontWeight: 'bold'}}>
-              ${food.price}
-            </Text>
-            <View style={style.addToCartBtn}>
-              <Icon name="add" size={20} color={COLORS.white} />
+            <Text style={style.price}>{item.price}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Icon name="star" color={COLORS.yellow} size={18} />
+              <Text style={style.rating}>4.3</Text>
             </View>
           </View>
         </View>
-      </TouchableHighlight>
+      </Pressable>
     );
   };
-  return (
-    <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
-      <View style={style.header}>
-        <View>
-          <View style={{flexDirection: 'row'}}>
-            <Text style={{fontSize: 28}}>Hello,</Text>
-            <Text style={{fontSize: 28, fontWeight: 'bold', marginLeft: 10}}>
-              Tấn Đạt
-            </Text>
-          </View>
-          <Text style={{marginTop: 5, fontSize: 22, color: COLORS.grey}}>
-            What do you want today
-          </Text>
-        </View>
+
+  const PopularItemCard = ({ item }) => {
+    return (
+      <View style={style.popularItemCard}
+        onPress={() => navigateToProductDetail(item)}>
         <Image
-          source={require('../../assets/person.png')}
-          style={{height: 50, width: 50, borderRadius: 25}}
+          source={{ uri: item.image }}
+          style={{
+            width: 100,
+            height: '100%',
+            borderTopLeftRadius: 10,
+            borderBottomLeftRadius: 10,
+            marginRight: 10,
+          }}
         />
-      </View>
-      <View
-        style={{
-          marginTop: 40,
-          flexDirection: 'row',
-          paddingHorizontal: 20,
-        }}>
-        <View style={style.inputContainer}>
-          <Icon name="search" size={28} />
-          <TextInput
-            style={{flex: 1, fontSize: 18}}
-            placeholder="Search for food"
-          />
-        </View>
-        <View style={style.sortBtn}>
-          <Icon name="tune" size={28} color={COLORS.white} />
+        <View style={{ paddingVertical: 15, justifyContent: 'center' }}>
+          <Text style={style.cardName}>{item.title}</Text>
+          <View style={{ flexDirection: 'row', marginTop: 10 }}>
+            <Text style={style.price}>{item.price}</Text>
+            <View style={{ flexDirection: 'row', marginLeft: 10 }}>
+              <Icon name="star" color={COLORS.yellow} size={18} />
+              <Text style={style.rating}>4.3</Text>
+            </View>
+          </View>
         </View>
       </View>
-      <View>
+    );
+  };
+  const keyExtractor = (item, index) => index.toString();
+  return (
+    <SafeAreaView style={{ backgroundColor: COLORS.white, flex: 1 }}>
+      {/* Header container */}
+      <View style={style.header}>
+        <Icon name="sort-variant" size={28} color={COLORS.primary} />
+        <Icon name="cart-outline" size={28} color={COLORS.primary} />
+      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Text style={style.headerTitle}>Best Furniture For Your Home.</Text>
+
+        {/* Input and sort button container */}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            padding: 20,
+          }}>
+          <View style={style.searchInputContainer}>
+            <Icon name="magnify" color={COLORS.grey} size={25} />
+            <TextInput placeholder="Search" />
+          </View>
+
+          <View style={style.sortBtn}>
+            <Icon name="tune" color={COLORS.white} size={25} />
+          </View>
+        </View>
+
+        <Text style={style.title}>Categories</Text>
+        {/* Render categories */}
         <ListCategories />
-      </View>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        numColumns={2}
-        data={foods}
-        renderItem={({item}) => <Card food={item} />}
-      />
+
+        {/* Render To Furnitures */}
+        <Text style={style.title}>Top Furniture</Text>
+
+        <FlatList
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingLeft: 20 }}
+          data={products}
+          horizontal
+          renderItem={Card}
+          keyExtractor={keyExtractor}
+
+        />
+
+        {/* Render To Popular */}
+        <Text style={style.title}>Popular</Text>
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingLeft: 20 }}
+          data={products}
+          renderItem={PopularItemCard}
+          keyExtractor={keyExtractor}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const style = StyleSheet.create({
   header: {
-    marginTop: 20,
+    paddingVertical: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
   },
-  inputContainer: {
-    flex: 1,
+  headerTitle: {
+    fontSize: 23,
+    fontWeight: 'bold',
+    width: '55%',
+    lineHeight: 30,
+    paddingHorizontal: 20,
+  },
+  searchInputContainer: {
     height: 50,
-    borderRadius: 10,
-    flexDirection: 'row',
     backgroundColor: COLORS.light,
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
+    borderRadius: 12,
   },
   sortBtn: {
-    width: 50,
-    height: 50,
-    marginLeft: 10,
     backgroundColor: COLORS.primary,
-    borderRadius: 10,
+    height: 50,
+    width: 50,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
+    marginLeft: 10,
   },
-  categoriesListContainer: {
-    paddingVertical: 30,
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  categoryBtn: {
-    height: 45,
-    width: 120,
-    marginRight: 7,
-    borderRadius: 30,
-    alignItems: 'center',
-    paddingHorizontal: 5,
+
+  categoriesContainer: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 20,
   },
-  categoryBtnImgCon: {
-    height: 35,
-    width: 35,
-    backgroundColor: COLORS.white,
-    borderRadius: 30,
-    justifyContent: 'center',
+  categoryItemBtn: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.light,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderRadius: 7,
     alignItems: 'center',
+  },
+  categoryText: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: COLORS.primary,
+    marginLeft: 5,
   },
   card: {
-    height: 220,
-    width: cardWidth,
-    marginHorizontal: 10,
-    marginBottom: 20,
-    marginTop: 50,
-    borderRadius: 15,
-    elevation: 13,
+    height: 190,
     backgroundColor: COLORS.white,
+    elevation: 10,
+    width: width / 2.5,
+    marginRight: 20,
+    padding: 10,
+    marginVertical: 20,
+    borderRadius: 10,
   },
-  addToCartBtn: {
-    height: 30,
-    width: 30,
+  cardName: {
+    marginTop: 10,
+    fontSize: 12,
+    color: COLORS.primary,
+    fontWeight: 'bold',
+  },
+  price: { fontWeight: 'bold', color: COLORS.primary, fontSize: 12 },
+  rating: {
+    fontWeight: 'bold',
+    color: COLORS.primary,
+    fontSize: 12,
+  },
+  title: { fontSize: 18, fontWeight: 'bold', paddingHorizontal: 20 },
+  iconContainer: {
+    height: 25,
+    width: 25,
+    backgroundColor: COLORS.white,
+    position: 'absolute',
+    elevation: 2,
+    right: 15,
+    top: 15,
     borderRadius: 20,
-    backgroundColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  popularItemCard: {
+    height: 90,
+    width: width - 100,
+    backgroundColor: COLORS.white,
+    elevation: 10,
+    marginVertical: 20,
+    marginRight: 20,
+    borderRadius: 10,
+    flexDirection: 'row',
+  },
 });
-
 export default HomeScreen;

@@ -1,12 +1,11 @@
-import 'react-native-gesture-handler';
 import React from 'react';
-import {StatusBar} from 'react-native';
+import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import COLORS from '../Demo01/src/consts/colors';
+import HomeScreen from './src/views/screens/HomeScreen';
 import DetailsScreen from './src/views/screens/DetailsScreen';
-import BottomNavigator from './src/views/navigation/BottomNavigator';
-import OnBoardScreen from './src/views/screens/OnBoardScreen';
+import {StatusBar} from 'react-native';
+import COLORS from './src/consts/colors';
 
 const Stack = createStackNavigator();
 
@@ -15,8 +14,7 @@ const App = () => {
     <NavigationContainer>
       <StatusBar backgroundColor={COLORS.white} barStyle="dark-content" />
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="BoardScreen" component={OnBoardScreen} />
-        <Stack.Screen name="Home" component={BottomNavigator} />
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>

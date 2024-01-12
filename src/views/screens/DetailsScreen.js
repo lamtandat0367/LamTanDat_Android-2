@@ -7,12 +7,24 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import COLORS from '../../consts/colors';
+
 const DetailsScreen = ({navigation, route}) => {
   const {item} = route.params;
+  const addToCart = async (product) => {
+    try {
+      const existingCart = await AsyncStorage.getItem('cart');
+      const cart = existingCart ? JSON.parse(existingCart) : [];
+      cart.push(product);
+      await AsyncStorage.setItem('cart', JSON.stringify(cart));
 
+      console.log('Sản phẩm đã được thêm vào giỏ hàng thành công!');
+    } catch (error) {
+      console.error('Lỗi khi thêm vào giỏ hàng:', error);
+    }
+  };
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
       <View style={style.header}>
@@ -117,8 +129,8 @@ const DetailsScreen = ({navigation, route}) => {
               }}>
               <Icon name="heart-outline" size={28} color={COLORS.primary} />
             </View>
-            <View style={style.addToCartBtn}>
-              <Text style={{color: COLORS.white}}>Add To Cart</Text>
+            <View style={style.addToCartBtn} >
+              <Text onPress={() => addToCart(item)} style={{color: COLORS.white}}>Add To Cart</Text>
             </View>
           </View>
         </View>

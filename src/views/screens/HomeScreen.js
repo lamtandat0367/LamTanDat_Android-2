@@ -20,10 +20,11 @@ const { width } = Dimensions.get('screen');
 
 const HomeScreen = ({ navigation }) => {
   const categoryItems = [
-    { name: 'Chair', iconName: 'seat-outline' },
-    { name: 'Table', iconName: 'table-furniture' },
-    { name: 'Cupboard', iconName: 'cupboard-outline' },
-    { name: 'bed', iconName: 'bed-queen-outline' },
+    { name: 'Tất cả sản phẩm', iconName: 'seat-outline' },
+    { name: 'Áo', iconName: 'table-furniture' },
+    { name: 'Quần', iconName: 'cupboard-outline' },
+    { name: 'Nhẫn', iconName: 'bed-queen-outline' },
+    { name: 'Vòng tay', iconName: 'vt-queen-outline' },
   ];
 
   const [products, setProducts] = useState([]);
@@ -52,7 +53,7 @@ const HomeScreen = ({ navigation }) => {
         {categoryItems.map((item, index) => (
           <TouchableOpacity
             key={index}
-            activeOpacity={0.8}
+            activeOpacity={0.9}
             onPress={() => setSelectedCategoryIndex(index)}>
             <View
               style={[
@@ -66,7 +67,7 @@ const HomeScreen = ({ navigation }) => {
               ]}>
               <Icon
                 name={item.iconName}
-                size={20}
+                size={10}
                 color={
                   selectedCategoryIndex == index ? COLORS.white : COLORS.primary
                 }
@@ -99,13 +100,13 @@ const HomeScreen = ({ navigation }) => {
         <View style={style.card}>
           <Image
             source={{ uri: item.image }}
-            style={{ height: 140, width: '100%', borderRadius: 10 }}
+            style={{ height: 190, width: '110%', borderRadius: 10, resizeMode: 'center' }}
           />
 
           <Text style={style.cardName}>{item.title}</Text>
           <View
             style={{
-              marginTop: 5,
+              marginTop: 15,
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
@@ -122,29 +123,33 @@ const HomeScreen = ({ navigation }) => {
 
   const PopularItemCard = ({ item }) => {
     return (
-      <View style={style.popularItemCard}
-        onPress={() => navigateToProductDetail(item)}>
-        <Image
-          source={{ uri: item.image }}
-          style={{
-            width: 120,
-            height: '140%',
-            borderTopLeftRadius: 15,
-            borderBottomLeftRadius: 15,
-            marginRight: 15,
-          }}
-        />
-        <View style={{ paddingVertical: 15, justifyContent: 'center' }}>
-          <Text style={style.cardName}>{item.title}</Text>
-          <View style={{ flexDirection: 'row', marginTop: 10 }}>
-            <Text style={style.price}>{item.price}</Text>
-            <View style={{ flexDirection: 'row', marginLeft: 10 }}>
-              <Icon name="star" color={COLORS.yellow} size={18} />
-              <Text style={style.rating}>4.3</Text>
+      <SafeAreaView onPress={() => navigateToProductDetail(item)}>
+        <View style={style.popularItemCard}
+        >
+          <Image
+            source={{ uri: item.image }}
+            style={{
+              width: 120,
+              height: '140%',
+              borderTopLeftRadius: 10,
+              borderBottomLeftRadius: 10,
+              marginRight: 10,
+              resizeMode: 'center',
+            }}
+          />
+          <View style={{ paddingVertical: 15, justifyContent: 'center' }}>
+            <Text style={style.cardName}>{item.title}</Text>
+            <View style={{ flexDirection: 'row', marginTop: 10 }}>
+              <Text style={style.price}>{item.price}</Text>
+              <View style={{ flexDirection: 'row', marginLeft: 10 }}>
+                <Icon name="star" color={COLORS.yellow} size={18} />
+                <Text style={style.rating}>4.3</Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
+      </SafeAreaView>
+
     );
   };
   const keyExtractor = (item, index) => index.toString();
@@ -153,7 +158,7 @@ const HomeScreen = ({ navigation }) => {
       {/* Header container */}
       <View style={style.header}>
         <Icon name="sort-variant" size={28} color={COLORS.primary} />
-        <Icon name="cart-outline" size={28} color={COLORS.primary} />
+        <Icon onPress={() => navigation.navigate('Addtocart')} name="cart-outline" size={28} color={COLORS.primary} />
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text style={style.headerTitle}>Best Furniture For Your Home.</Text>
@@ -166,15 +171,15 @@ const HomeScreen = ({ navigation }) => {
             padding: 20,
           }}>
           <View style={style.searchInputContainer}>
-            <Icon name="magnify" color={COLORS.grey} size={25} />
-            <TextInput placeholder="Search" />
+            <Icon name="magnify" color={COLORS.grey} size={30} />
+            <TextInput placeholder="Search"
+              style={style.input} />
           </View>
 
           <View style={style.sortBtn}>
             <Icon name="tune" color={COLORS.white} size={25} />
           </View>
         </View>
-
         <Text style={style.title}>Categories</Text>
         {/* Render categories */}
         <ListCategories />
@@ -243,14 +248,15 @@ const style = StyleSheet.create({
   categoriesContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 20,
+    padding: 18,
+    marginRight: 15
   },
   categoryItemBtn: {
     flexDirection: 'row',
     backgroundColor: COLORS.light,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderRadius: 7,
+    paddingVertical: 15,
+    paddingHorizontal: 15,
+    borderRadius: 10,
     alignItems: 'center',
   },
   categoryText: {
@@ -260,7 +266,7 @@ const style = StyleSheet.create({
     marginLeft: 5,
   },
   card: {
-    height: 250,
+    height: 200,
     backgroundColor: COLORS.white,
     elevation: 15,
     width: width / 2,

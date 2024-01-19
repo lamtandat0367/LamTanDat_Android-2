@@ -9,6 +9,7 @@ import COLORS from './src/consts/colors';
 import Login from './src/login/Login';
 import Register from './src/login/Register';
 import Addtocart from './src/views/screens/Addtocart';
+import Search from './src/views/screens/Search';
 
 const Stack = createStackNavigator();
 
@@ -20,6 +21,7 @@ const App = () => {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="Search" component={Search} />
         <Stack.Screen name="Addtocart" component={Addtocart} />
         <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
       </Stack.Navigator>

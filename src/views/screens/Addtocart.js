@@ -112,6 +112,15 @@ export default function Addtocart({ navigation, navigateToProductDetail }) {
                 console.error('Lỗi khi lưu giỏ hàng mới:', error);
             });
     };
+    const handleSubmit = async () => {
+        const existingCart = await AsyncStorage.getItem('cart');
+        if (existingCart) {
+            await AsyncStorage.setItem('cart', JSON.stringify([]));
+            setCartItems([]);
+            alert("Thanh toán thành công!");
+        }
+
+    }
 
 
     return (
@@ -171,7 +180,7 @@ export default function Addtocart({ navigation, navigateToProductDetail }) {
                 <Text style={styles.totalPrice}>${calculateTotalPrice()}</Text>
             </View>
             <TouchableOpacity style={styles.paymentButton}>
-                <Text style={styles.paymentButtonText}>Thanh toán</Text>
+                <Text style={styles.paymentButtonText} onPress={()=> handleSubmit()}>Thanh toán</Text>
             </TouchableOpacity>
         </View>
     );
@@ -185,15 +194,15 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     headerBtn: {
-        marginTop:30,
+        marginTop: 30,
         height: 50,
         width: 50,
         backgroundColor: '#f7f7f7',
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
-      },
-    
+    },
+
     header: {
         fontSize: 20,
         fontWeight: 'bold',

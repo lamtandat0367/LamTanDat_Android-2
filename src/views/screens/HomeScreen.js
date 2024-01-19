@@ -93,65 +93,94 @@ const HomeScreen = ({ navigation }) => {
   const navigateToProductDetail = (item) => {
     navigation.navigate('DetailsScreen', { item });
   };
+
+  const truncateTitle = (title) => {
+    const maxLines = 2;
+    const maxCharsPerLine = 10;
+    const lines = title.split('\n');
+    if (lines.length > maxLines) {
+      return lines.slice(0, maxLines).join('\n') + '...';
+    }
+
+    const chars = title.split('');
+    let currentLine = 0;
+    let currentChars = 0;
+    const truncatedChars = chars.reduce((acc, char) => {
+      if (char === '\n' || currentChars >= maxCharsPerLine) {
+        currentLine += 1;
+        currentChars = 0;
+      }
+
+      if (currentLine < maxLines) {
+        currentChars += 1;
+        return acc + char;
+      }
+
+      return acc;
+    }, '');
+
+    return truncatedChars;
+  };
+
   const Card = ({ item }) => {
     return (
-      <Pressable
+      <TouchableOpacity
         onPress={() => navigateToProductDetail(item)}>
         <View style={style.card}>
           <Image
             source={{ uri: item.image }}
-            style={{ height: 190, width: '110%', borderRadius: 10, resizeMode: 'center' }}
+            style={{ height: 190, width: '100%', borderRadius: 10, resizeMode: 'center' }}
           />
 
-          <Text style={style.cardName}>{item.title}</Text>
+          <Text style={style.cardName}>{truncateTitle(item.title)}</Text>
           <View
             style={{
-              marginTop: 15,
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Text style={style.price}>{item.price}</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={style.price}>{item.price}</Text>
               <Icon name="star" color={COLORS.yellow} size={18} />
               <Text style={style.rating}>4.3</Text>
             </View>
           </View>
         </View>
-      </Pressable>
+      </TouchableOpacity>
     );
   };
 
-  const PopularItemCard = ({ item }) => {
-    return (
-      <SafeAreaView onPress={() => navigateToProductDetail(item)}>
-        <View style={style.popularItemCard}
-        >
-          <Image
-            source={{ uri: item.image }}
-            style={{
-              width: 120,
-              height: '140%',
-              borderTopLeftRadius: 10,
-              borderBottomLeftRadius: 10,
-              marginRight: 10,
-              resizeMode: 'center',
-            }}
-          />
-          <View style={{ paddingVertical: 15, justifyContent: 'center' }}>
-            <Text style={style.cardName}>{item.title}</Text>
-            <View style={{ flexDirection: 'row', marginTop: 10 }}>
-              <Text style={style.price}>{item.price}</Text>
-              <View style={{ flexDirection: 'row', marginLeft: 10 }}>
-                <Icon name="star" color={COLORS.yellow} size={18} />
-                <Text style={style.rating}>4.3</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-      </SafeAreaView>
+  // const PopularItemCard = ({ item }) => {
+  //   return (
+  //     <SafeAreaView onPress={() => navigateToProductDetail(item)}>
+  //       <View style={style.popularItemCard}
+  //       >
+  //         <Image
+  //           source={{ uri: item.image }}
+  //           style={{
+  //             width: 120,
+  //             height: '140%',
+  //             borderTopLeftRadius: 10,
+  //             borderBottomLeftRadius: 10,
+  //             marginRight: 10,
+  //             resizeMode: 'center',
+  //           }}
+  //         />
+  //         <View style={{ paddingVertical: 15, justifyContent: 'center' }}>
+  //           <Text style={style.cardName}>{item.title}</Text>
+  //           <View style={{ flexDirection: 'row', marginTop: 10 }}>
+  //             <Text style={style.price}>{item.price}</Text>
+  //             <View style={{ flexDirection: 'row', marginLeft: 10 }}>
+  //               <Icon name="star" color={COLORS.yellow} size={18} />
+  //               <Text style={style.rating}>4.3</Text>
+  //             </View>
+  //           </View>
+  //         </View>
+  //       </View>
+  //     </SafeAreaView>
 
-    );
-  };
+  //   );
+  // };
+
   const keyExtractor = (item, index) => index.toString();
   return (
     <SafeAreaView style={{ backgroundColor: COLORS.white, flex: 1 }}>
@@ -161,7 +190,7 @@ const HomeScreen = ({ navigation }) => {
         <Icon onPress={() => navigation.navigate('Addtocart')} name="cart-outline" size={28} color={COLORS.primary} />
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={style.headerTitle}>Best Furniture For Your Home.</Text>
+        <Text style={style.headerTitle}>Mr.Tấn Đạt            (Cu Đen)</Text>
 
         {/* Input and sort button container */}
         <View
@@ -170,35 +199,35 @@ const HomeScreen = ({ navigation }) => {
             justifyContent: 'space-between',
             padding: 20,
           }}>
-          <View style={style.searchInputContainer}>
-            <Icon name="magnify" color={COLORS.grey} size={30} />
-            <TextInput placeholder="Search"
-              style={style.input} />
+          <View style={style.searchInputContainer} >
+            {/* <Icon name="magnify" color={COLORS.grey} size={30} /> */}
+            <Text style={style.input} onPress={() => navigation.navigate('Search')}>Search</Text>
+          </View>
+          <View style={style.sortBtn}>
+            <Icon name="magnify" color={COLORS.white} size={25} />
           </View>
 
-          <View style={style.sortBtn}>
-            <Icon name="tune" color={COLORS.white} size={25} />
-          </View>
         </View>
-        <Text style={style.title}>Categories</Text>
+        <Text style={style.title}>Danh mục sản phẩm</Text>
         {/* Render categories */}
         <ListCategories />
 
         {/* Render To Furnitures */}
-        <Text style={style.title}>Top Furniture</Text>
+        <Text style={style.title}>Sảm Phẩm Bán Chạy</Text>
 
         <FlatList
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingLeft: 20 }}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingLeft: 20, }}
+
           data={products}
-          horizontal
+          // horizontal
           renderItem={Card}
           keyExtractor={keyExtractor}
-
+          numColumns={2}
         />
 
         {/* Render To Popular */}
-        <Text style={style.title}>Popular</Text>
+        {/* <Text style={style.title}>Tất cả sản phẩm</Text>
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -206,9 +235,9 @@ const HomeScreen = ({ navigation }) => {
           data={products}
           renderItem={PopularItemCard}
           keyExtractor={keyExtractor}
-        />
+        /> */}
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
 
@@ -266,12 +295,14 @@ const style = StyleSheet.create({
     marginLeft: 5,
   },
   card: {
-    height: 200,
+    height: 220,
+    alignItems: 'center',
     backgroundColor: COLORS.white,
     elevation: 15,
-    width: width / 2,
+    width: width / 2.5,
     marginRight: 20,
     padding: 10,
+    marginHorizontal: 2,
     marginVertical: 20,
     borderRadius: 10,
   },

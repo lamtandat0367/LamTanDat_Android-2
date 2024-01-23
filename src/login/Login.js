@@ -3,10 +3,39 @@ import {
   StyleSheet, Text, View, TextInput, TouchableOpacity,
   KeyboardAvoidingView, ImageBackground
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Login({ navigation }) {
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const handleLogin = async () => {
+    if(!username || !password){
+      alert("Vui lòng nhập đầy đủ");
+      return;
+    }
+    const accounts = await AsyncStorage.getItem("user");
+    if (accounts) {
+      const accountArray = JSON.parse(accounts);
+      var flag = accountArray.find(
+        (account) =>
+          account.username == username && account.password == password
+      );
+      if (flag) {
+        alert("Đăng nhập thành công!");
+        navigation.navigate("HomeScreen");
+      } else {
+        alert("Tài khoản hoặc mật khẩu không đúng!");
+        return;
+      }
+    }else{
+      alert("Tài khoản hoặc mật khẩu không đúng!");
+      return;
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -20,18 +49,18 @@ function Login({ navigation }) {
               <Icon name="user" size={30} color="black" />
               <TextInput style={styles.input}
                 placeholderTextColor={"#000033"}
-                placeholder="Nhập tên đăng nhập hoặc email" />
+                placeholder="Nhập tên đăng nhập hoặc email" onChangeText={(e) => setUsername(e)}/>
             </View>
 
             <View style={styles.iconinput}>
               <Icon name="lock" size={30} color="black" />
               <TextInput style={styles.input}
                 placeholderTextColor={"#000033"}
-                placeholder="Nhập mật khẩu" />
+                placeholder="Nhập mật khẩu" onChangeText={(e) => setPassword(e)}/>
             </View>
             <Text style={{ alignSelf: 'flex-end' }}>Quên mật khẩu?</Text>
           </View>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HomeScreen')}>
+          <TouchableOpacity style={styles.button} onPress={() => handleLogin()}>
             <Text style={styles.buttonText}>Đăng nhập</Text>
           </TouchableOpacity>
           <View style={styles.rowContainer}>
@@ -81,7 +110,7 @@ const styles = StyleSheet.create({
 
   },
   button: {
-    backgroundColor: '#000033',
+    backgroundColor: '#d9d9d9',
     padding: 10,
     marginTop: 30,
   },

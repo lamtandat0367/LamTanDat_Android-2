@@ -15,14 +15,23 @@ const DetailsScreen = ({navigation, route}) => {
   const {item} = route.params;
   const addToCart = async (product) => {
     try {
-      const existingCart = await AsyncStorage.getItem('cart');
-      const cart = existingCart ? JSON.parse(existingCart) : [];
-      cart.push(product);
-      await AsyncStorage.setItem('cart', JSON.stringify(cart));
+      const existingCart = await AsyncStorage.getItem("cart");
+      let cart = existingCart ? JSON.parse(existingCart) : [];
 
-      console.log('Sản phẩm đã được thêm vào giỏ hàng thành công!');
+      const existingProductIndex = cart.findIndex(
+        (item) => item.id === product.id
+      );
+
+      if (existingProductIndex >= 0) {
+        cart[existingProductIndex].quantity += 1;
+      } else {
+        product.quantity = 1;
+        cart.push(product);
+      }
+      await AsyncStorage.setItem("cart", JSON.stringify(cart));
+      Alert.alert("Thành công", "Thêm vào giỏ hàng thành công!");
     } catch (error) {
-      console.error('Lỗi khi thêm vào giỏ hàng:', error);
+      console.error("Lỗi khi thêm vào giỏ hàng:", error);
     }
   };
   return (
